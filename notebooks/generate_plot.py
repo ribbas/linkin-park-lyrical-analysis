@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# import packages
 from plotly import tools
-import plotly.plotly as py
-import plotly.graph_objs as go
+from plotly import graph_objs as go
 import numpy as np
 
-from secret import API_KEY, USERNAME
 from settings.artistinfo import LINKIN_PARK_ALBUMS
 
-py.sign_in(username=USERNAME, api_key=API_KEY)
 
 coords = []
 for i in xrange(1, 5):
@@ -104,10 +100,10 @@ def phrase_sent_plot(df):
 
 def doc_sent_plot(df):
 
-    traces = []
+    data = []
     for album in LINKIN_PARK_ALBUMS:
         norm_sent = df["norm_comp"][df["album"] == album]
-        traces.append(go.Box(
+        data.append(go.Box(
             y=norm_sent,
             name=album.title().replace("-", " "),
             boxpoints="all",
@@ -117,4 +113,4 @@ def doc_sent_plot(df):
             showlegend=False,
         ))
 
-    return traces
+    return data

@@ -8,13 +8,13 @@ from data.filemgmt import vectorize_docs
 from features.relfreq import RelativeFrequency
 from features.simsongs import CosineSimilarity
 from features.sentiment import CompoundSentiment
-from settings.artistinfo import LINKIN_PARK_ALBUMS
 
 
 class DataframeGenerator(object):
 
-    def __init__(self):
+    def __init__(self, albums):
 
+        self.albums = albums
         self.rel_freq = []
         self.cos_sim = []
         self.cos_sim_all = None
@@ -24,7 +24,7 @@ class DataframeGenerator(object):
     def init_dfs(self):
 
         # populate rel_freq
-        for album in LINKIN_PARK_ALBUMS:
+        for album in self.albums:
 
             data, labels = vectorize_docs(
                 artist="linkin-park",
@@ -39,7 +39,7 @@ class DataframeGenerator(object):
         print "rel_freq generated"
 
         # populate cos_sim
-        for album in LINKIN_PARK_ALBUMS:
+        for album in self.albums:
 
             data, labels = vectorize_docs(
                 artist="linkin-park",
