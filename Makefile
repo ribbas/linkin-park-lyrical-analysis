@@ -25,6 +25,7 @@ update: req-venv
 	@diff temp.txt jupyter-req.txt | grep "<" | cut -d " " -f 2 > ${REQ}
 	@rm temp.txt
 
+
 .PHONY: init
 init: req-venv
 	# upgrade PIP on virtual environment
