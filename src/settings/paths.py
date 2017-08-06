@@ -14,6 +14,10 @@ DATA_DIRS = {
     "DATA_DIR": DATA_DIR,
     "RAW_DATA_DIR": RAW_DATA_DIR,
     "LYRICS_DIR": path.join(RAW_DATA_DIR, "lyrics"),
+    "VALENCE_AROUSAL_RAW": path.join(
+        RAW_DATA_DIR,
+        "dataset-fb-valence-arousal-anon.csv"),
+    "VALENCE_AROUSAL": path.join(RAW_DATA_DIR, "valence-arousal.csv"),
 }
 
 LOG_DIR = path.join(BASE_DIR, "logs")
