@@ -73,3 +73,5 @@ class RelativeFrequency(object):
         weight = float(self.df["freq"].sum())
         self.df = self.df.head(10)
         self.df["freq"] = self.df["freq"].apply(lambda x: x / weight)
+        self.df = self.df.reset_index()
+        self.df = self.df[["term", "freq"]]

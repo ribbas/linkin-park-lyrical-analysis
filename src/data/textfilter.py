@@ -62,13 +62,7 @@ def __normalizer(text):
 
 def normalize_text(content, sentences=False):
 
-    import sys
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
-    try:
-        norm_text = content.encode("ascii", "ignore").lower()
-    except:
-        print content
+    norm_text = content.encode("ascii", "ignore").lower()
 
     for word, expr in CONTRACTIONS.items():
         norm_text = norm_text.replace(word, expr)

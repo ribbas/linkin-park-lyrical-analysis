@@ -73,7 +73,7 @@ class Album(object):
 
         output = {
             "album": self.album,
-            "tracklist": tracklist,
+            "tracklist": sorted(tracklist, key=lambda x: -len(x["title"])),
         }
 
         return output

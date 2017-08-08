@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 from data.filemgmt import vectorize_docs
 from features.relfreq import RelativeFrequency
@@ -84,25 +84,36 @@ class DataframeGenerator(object):
 
         saobj = CompoundSentiment(data=data, labels=labels)
         saobj.get_sentiment()
-        self.doc_sent = saobj.df
+        doc_sent = saobj.df
+        self.doc_sent = doc_sent[["title", "album", "norm_comp"]]
 
         print "doc_sent generated"
 
-        # generate phrase_sent using doc_sent
-        sorted_phrases = set(
-            self.doc_sent.iloc[self.doc_sent["norm_comp"].argsort()].sum()
-            ["sentences"])
-        sorted_phrases = (sorted(sorted_phrases, key=lambda x: x[-1]))
-
-        # HARDCODED TO GET RID OF VERY SIMILAR PHRASES
-        # i.e. same phrase with an extra article
-        sorted_phrases = (
-            sorted_phrases[:2] + sorted_phrases[4:12] +
-            sorted_phrases[:-12:-1][::-1][:5] +
-            sorted_phrases[:-12:-1][::-1][6:11]
-        )
-
-        self.phrase_sent = DataFrame(sorted_phrases, columns=[
-            "phrase", "sentiment"])
+        phrase_sent = doc_sent.set_index(
+            ["title", "album", "norm_comp"]
+        )["sentences"].apply(Series).stack()
+        phrase_sent = phrase_sent.reset_index()
+        phrase_sent.drop("level_3", axis=1, inplace=True)
+        phrase_sent.columns = ["title", "album", "norm_comp", "sentences"]
+        phrase_sent.drop_duplicates(subset="sentences", inplace=True)
+        phrase_sent[["phrase", "sent_score"]] = phrase_sent[
+            "sentences"].apply(Series)
+        phrase_sent.sort_values("sent_score", inplace=True)
+        phrase_sent["num_words"] = phrase_sent["phrase"].apply(
+            lambda x: len(x.split(" ")))
+        phrase_sent = phrase_sent.reset_index()
+        self.phrase_sent = phrase_sent[
+            ["phrase", "sent_score", "num_words", "title", "album", "norm_comp"]
+        ]
 
         print "phrase_sent generated"
+
+        self.extreme_phrase_sent = self.phrase_sent.iloc[:2]
+        self.extreme_phrase_sent = self.extreme_phrase_sent.append(
+            self.phrase_sent.iloc[4:12])
+        self.extreme_phrase_sent = self.extreme_phrase_sent.append(
+            self.phrase_sent.iloc[:-12:-1][::-1][:5])
+        self.extreme_phrase_sent = self.extreme_phrase_sent.append(
+            self.phrase_sent.iloc[:-12:-1][::-1][6:11])
+
+        print "extreme_phrase_sent generated"

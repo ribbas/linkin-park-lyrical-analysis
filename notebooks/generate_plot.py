@@ -31,7 +31,9 @@ def rel_freq_plot(df):
         )
 
     fig["layout"].update(
-        height=2500, width=1000, title="Top Relative Frequency of Terms"
+        height=2500, width=1000,
+        title="Top Relative Frequency of Terms",
+        margin=go.Margin(r=150, b=100),
     )
 
     return fig
@@ -68,14 +70,22 @@ def cos_sim_plot(df):
             coords[i][0], coords[i][-1]
         )
 
-    fig["layout"].update(height=2000, width=900, title="Cosine Similarity")
+    for attr in fig["layout"]:
+        if "xaxis" in attr:
+            fig["layout"][attr].update(tickangle=90)
+
+    fig["layout"].update(
+        height=2000, width=900,
+        title="Cosine Similarity",
+        margin=go.Margin(l=190, b=150),
+    )
 
     return fig
 
 
 def phrase_sent_plot(df):
 
-    values = df["sentiment"]
+    values = df["sent_score"]
     colors = [
         "rgba(226, 43, 43, 0.7)" if x < 0
         else "rgba(82, 183, 77, 0.7)" for x in values
@@ -114,3 +124,45 @@ def doc_sent_plot(df):
         ))
 
     return data
+
+
+def phrase_sent_scatter(df):
+
+    data = []
+    for album in LINKIN_PARK_ALBUMS:
+        data.append(
+            go.Scatter(
+                x=df["num_words"][df["album"] == album],
+                y=df["sent_score"][df["album"] == album],
+                mode="markers",
+                marker=dict(
+                    size=14,
+                    line=dict(width=1),
+                    color=album,
+                    opacity=0.5
+                ),
+                name=album.title().replace("-", " "),
+                text=df["phrase"][df["album"] == album]
+            )
+        )
+
+    layout = go.Layout(
+        title="Sentiment Score of Phrases",
+        hovermode="closest",
+        xaxis=dict(
+            title="Number of words",
+            ticklen=5,
+            zeroline=False,
+            gridwidth=2,
+        ),
+        yaxis=dict(
+            title="Sentiment Score",
+            ticklen=5,
+            gridwidth=2,
+        ),
+        showlegend=True
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+
+    return fig

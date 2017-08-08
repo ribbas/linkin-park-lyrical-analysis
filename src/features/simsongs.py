@@ -28,7 +28,6 @@ class CosineSimilarity(object):
         cos_sim = linear_kernel(tfidf, tfidf).flatten()
 
         num_row = len(self.labels)
-        # max_row = num_row if num_row < n_rows else n_rows
 
         temp_df = []
         for index in range(num_row):
@@ -41,7 +40,4 @@ class CosineSimilarity(object):
 
         self.df = DataFrame(temp_df, index=self.labels)
 
-        labels_sorted = self.df.mean().argsort()[::-1]
-        self.labels = [self.labels[i] for i in labels_sorted]
-        self.df = self.df.reindex(self.labels)
         self.df = self.df[self.labels]
