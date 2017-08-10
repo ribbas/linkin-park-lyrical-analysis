@@ -5,6 +5,7 @@ import numpy as np
 from pandas import DataFrame, Series
 
 from data.filemgmt import vectorize_docs
+from features.emotion import EmotionClassifier
 from features.relfreq import RelativeFrequency
 from features.simsongs import CosineSimilarity
 from features.sentiment import CompoundSentiment
@@ -20,6 +21,8 @@ class DataframeGenerator(object):
         self.cos_sim_all = None
         self.doc_sent = None
         self.phrase_sent = None
+        self.valence = None
+        self.arousal = None
 
     def init_dfs(self):
 
@@ -117,3 +120,23 @@ class DataframeGenerator(object):
             self.phrase_sent.iloc[:-12:-1][::-1][6:11])
 
         print "extreme_phrase_sent generated"
+
+    def init_clf_dfs(self):
+
+        data, labels = vectorize_docs(
+            artist="linkin-park",  # specify artist
+            artist_only=True,
+            keep_album=True,  # option to use the album name as a delimiter
+        )
+
+        ec_obj = EmotionClassifier()
+        ec_obj.train_model("valence")
+        ec_obj.get_pred_int()
+        ec_obj.predict_score(labels, data)
+        self.valence = ec_obj.df
+
+        ec_obj = EmotionClassifier()
+        ec_obj.train_model("arousal")
+        ec_obj.get_pred_int()
+        ec_obj.predict_score(labels, data)
+        self.arousal = ec_obj.df
