@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from pandas import DataFrame, Series
+from pandas import DataFrame, Series, concat
 
 from data.filemgmt import vectorize_docs
 from features.emotion import EmotionClassifier
@@ -21,8 +21,7 @@ class DataframeGenerator(object):
         self.cos_sim_all = None
         self.doc_sent = None
         self.phrase_sent = None
-        self.valence = None
-        self.arousal = None
+        self.valence_arousal = None
 
     def init_dfs(self):
 
@@ -131,12 +130,24 @@ class DataframeGenerator(object):
 
         ec_obj = EmotionClassifier()
         ec_obj.train_model("valence")
-        ec_obj.get_pred_int()
+        # ec_obj.get_pred_int()
         ec_obj.predict_score(labels, data)
-        self.valence = ec_obj.df
+        valence = ec_obj.df
 
         ec_obj = EmotionClassifier()
         ec_obj.train_model("arousal")
-        ec_obj.get_pred_int()
+        # ec_obj.get_pred_int()
         ec_obj.predict_score(labels, data)
-        self.arousal = ec_obj.df
+        arousal = ec_obj.df
+
+        valence = valence.set_index(valence["title"])
+        arousal = arousal.set_index(arousal["title"])
+
+        valence = valence[["album", "mean_pred", "lower", "upper"]]
+        arousal = arousal[["mean_pred", "lower", "upper"]]
+
+        self.valence_arousal = concat([valence, arousal], axis=1)
+        self.valence_arousal.columns = [
+            "album", "valence_pred", "valence_low", "valence_high",
+            "arousal_pred", "arousal_low", "arousal_high"
+        ]

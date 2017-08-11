@@ -141,24 +141,20 @@ class EmotionClassifier(object):
         )
 
         self.df["lower"] = self.df.apply(
-            lambda x: (x["mean_pred"] - x["lower"]) / 2.0, axis=1
+            lambda x: (x["mean_pred"] - x["lower"]), axis=1
         )
 
         self.df["upper"] = self.df.apply(
-            lambda x: (x["upper"] - x["mean_pred"]) / 2.0, axis=1
+            lambda x: (x["upper"] - x["mean_pred"]), axis=1
         )
 
         self.df = self.df[["title", "album", "mean_pred", "lower", "upper"]]
-
-        print self.df
-
-        self.df.to_csv("test.csv")
 
 
 if __name__ == "__main__":
 
     x = EmotionClassifier()
-    x.train_model("valence")
+    x.train_model("arousal")
     # x.get_pred_int()
 
     from data.filemgmt import vectorize_docs
