@@ -120,8 +120,6 @@ class DataframeGenerator(object):
 
         print "extreme_phrase_sent generated"
 
-    def init_clf_dfs(self):
-
         data, labels = vectorize_docs(
             artist="linkin-park",  # specify artist
             artist_only=True,
@@ -134,20 +132,31 @@ class DataframeGenerator(object):
         ec_obj.predict_score(labels, data)
         valence = ec_obj.df
 
+        print "valence generated"
+
         ec_obj = EmotionClassifier()
         ec_obj.train_model("arousal")
         # ec_obj.get_pred_int()
         ec_obj.predict_score(labels, data)
         arousal = ec_obj.df
 
+        print "arousal generated"
+
         valence = valence.set_index(valence["title"])
         arousal = arousal.set_index(arousal["title"])
 
-        valence = valence[["album", "mean_pred", "lower", "upper"]]
-        arousal = arousal[["mean_pred", "lower", "upper"]]
+        valence = valence[["album", "mean_pred", "std_dev"]]
+        arousal = arousal[["mean_pred", "std_dev"]]
 
         self.valence_arousal = concat([valence, arousal], axis=1)
         self.valence_arousal.columns = [
-            "album", "valence_pred", "valence_low", "valence_high",
-            "arousal_pred", "arousal_low", "arousal_high"
+            "album",
+            "valence_pred",
+            "valence_std_dev",
+            "arousal_pred",
+            "arousal_std_dev"
         ]
+
+        self.valence_arousal.sort_index(inplace=True)
+
+        print "valence-arousal generated"

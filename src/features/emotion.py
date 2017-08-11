@@ -97,9 +97,6 @@ class EmotionClassifier(object):
         )
         self.clf.fit(self.x_train, self.y_train)
 
-        print "Model trained.\nVectorizer:\n", self.vectorizer, \
-            "\nClassifier:\n", self.clf
-
     def get_pred_int(self):
 
         err_down, err_up = self.pred_ints(
@@ -140,15 +137,11 @@ class EmotionClassifier(object):
             lambda x: np.mean((x["lower"], x["upper"])), axis=1
         )
 
-        self.df["lower"] = self.df.apply(
+        self.df["std_dev"] = self.df.apply(
             lambda x: (x["mean_pred"] - x["lower"]), axis=1
         )
 
-        self.df["upper"] = self.df.apply(
-            lambda x: (x["upper"] - x["mean_pred"]), axis=1
-        )
-
-        self.df = self.df[["title", "album", "mean_pred", "lower", "upper"]]
+        self.df = self.df[["title", "album", "mean_pred", "std_dev"]]
 
 
 if __name__ == "__main__":
