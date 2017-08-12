@@ -82,21 +82,24 @@ class DataframeGenerator(object):
             keep_album=True,
             normalized=True,
             sentences=True,
+            titlify=True,
         )
 
         saobj = CompoundSentiment(data=data, labels=labels)
         saobj.get_sentiment()
         doc_sent = saobj.df
-        self.doc_sent = doc_sent[["title", "album", "norm_comp"]]
+        doc_sent = doc_sent.set_index(doc_sent["title"])
+        self.doc_sent = doc_sent[["album", "norm_comp"]]
 
         print "doc_sent generated"
 
         phrase_sent = doc_sent.set_index(
-            ["title", "album", "norm_comp"]
+            ["album", "norm_comp"]
         )["sentences"].apply(Series).stack()
         phrase_sent = phrase_sent.reset_index()
-        phrase_sent.drop("level_3", axis=1, inplace=True)
-        phrase_sent.columns = ["title", "album", "norm_comp", "sentences"]
+        # print list(phrase_sent)
+        phrase_sent.drop("level_2", axis=1, inplace=True)
+        phrase_sent.columns = ["album", "norm_comp", "sentences"]
         phrase_sent.drop_duplicates(subset="sentences", inplace=True)
         phrase_sent[["phrase", "sent_score"]] = phrase_sent[
             "sentences"].apply(Series)
@@ -105,7 +108,7 @@ class DataframeGenerator(object):
             lambda x: len(x.split(" ")))
         phrase_sent = phrase_sent.reset_index()
         self.phrase_sent = phrase_sent[
-            ["phrase", "sent_score", "num_words", "title", "album", "norm_comp"]
+            ["phrase", "sent_score", "num_words", "album", "norm_comp"]
         ]
 
         print "phrase_sent generated"
@@ -127,14 +130,6 @@ class DataframeGenerator(object):
         )
 
         ec_obj = EmotionClassifier()
-        ec_obj.train_model("valence")
-        # ec_obj.get_pred_int()
-        ec_obj.predict_score(labels, data)
-        valence = ec_obj.df
-
-        print "valence generated"
-
-        ec_obj = EmotionClassifier()
         ec_obj.train_model("arousal")
         # ec_obj.get_pred_int()
         ec_obj.predict_score(labels, data)
@@ -142,21 +137,15 @@ class DataframeGenerator(object):
 
         print "arousal generated"
 
-        valence = valence.set_index(valence["title"])
         arousal = arousal.set_index(arousal["title"])
 
-        valence = valence[["album", "mean_pred", "std_dev"]]
-        arousal = arousal[["mean_pred", "std_dev"]]
-
-        self.valence_arousal = concat([valence, arousal], axis=1)
+        self.valence_arousal = arousal[["album", "mean_pred", "std_dev"]]
         self.valence_arousal.columns = [
             "album",
-            "valence_pred",
-            "valence_std_dev",
             "arousal_pred",
             "arousal_std_dev"
         ]
 
-        self.valence_arousal.sort_index(inplace=True)
+        self.valence_arousal = self.valence_arousal.sort_index().copy()
 
         print "valence-arousal generated"

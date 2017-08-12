@@ -75,7 +75,7 @@ class EmotionClassifier(object):
             ngram_range=(1, 5),
         )
 
-        # Use `fit` to learn the vocabulary of the titles
+        # Use `fit` to learn the vocabulary
         self.vectorizer.fit(self.emo_df["Anonymized Message"])
 
         # Use `tranform` to generate the vectorized matrix
@@ -113,7 +113,7 @@ class EmotionClassifier(object):
 
     def predict_score(self, labels, data):
 
-        # Use `fit` to learn the vocabulary of the titles
+        # Use `fit` to learn the vocabulary
         self.vectorizer.fit(data)
 
         # Use `tranform` to generate the vectorized matrix
@@ -123,8 +123,11 @@ class EmotionClassifier(object):
             self.clf, X, percentile=90
         )
 
-        titles = [i.split("(")[0].title().replace("-", " ") for i in labels]
-        albums = [i.split("(")[-1][:-1] for i in labels]
+        def titlify(text):
+            return text.title().replace("-", " ")
+
+        titles = [titlify(i.split("(")[0]) for i in labels]
+        albums = [titlify(i.split("(")[-1][:-1]) for i in labels]
 
         self.df = DataFrame({
             "title": titles,
@@ -142,20 +145,3 @@ class EmotionClassifier(object):
         )
 
         self.df = self.df[["title", "album", "mean_pred", "std_dev"]]
-
-
-if __name__ == "__main__":
-
-    x = EmotionClassifier()
-    x.train_model("arousal")
-    # x.get_pred_int()
-
-    from data.filemgmt import vectorize_docs
-
-    data, labels = vectorize_docs(
-        artist="linkin-park",  # specify artist
-        artist_only=True,
-        keep_album=True,  # option to use the album name as a delimiter
-    )
-
-    x.predict_score(labels, data)

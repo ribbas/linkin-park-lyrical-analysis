@@ -65,13 +65,14 @@ class RelativeFrequency(object):
 
         filtered_uniques = self.unique_enough(sorted_freqs)
 
-        self.df = DataFrame(
+        df = DataFrame(
             dict(filtered_uniques).items(), columns=["term", "freq"]
         )
 
-        self.df.sort_values("freq", inplace=True, ascending=False)
-        weight = float(self.df["freq"].sum())
-        self.df = self.df.head(10)
-        self.df["freq"] = self.df["freq"].apply(lambda x: x / weight)
-        self.df = self.df.reset_index()
-        self.df = self.df[["term", "freq"]]
+        df.sort_values("freq", inplace=True, ascending=False)
+        weight = float(df["freq"].sum())
+        df = df.head(10)
+        df["freq"] = df["freq"].apply(lambda x: x / weight)
+        df = df.reset_index()
+        df = df.set_index(df["term"])
+        self.df = df[["freq"]]

@@ -25,7 +25,7 @@ def rel_freq_plot(df):
 
     for i in xrange(len(LINKIN_PARK_ALBUMS)):
         fig.append_trace(
-            go.Bar(x=df[i]["term"], y=df[i]["freq"],
+            go.Bar(x=df[i].index, y=df[i]["freq"],
                    showlegend=False),
             coords[i][0], coords[i][-1]
         )
@@ -94,7 +94,6 @@ def phrase_sent_plot(df):
     data = [go.Bar(
         x=values,
         y=df["phrase"],
-        name="SF Zoo",
         orientation="h",
         marker=dict(color=colors),
     )]
@@ -112,6 +111,7 @@ def doc_sent_plot(df):
 
     data = []
     for album in LINKIN_PARK_ALBUMS:
+        album = album.title().replace("-", " ")
         norm_sent = df["norm_comp"][df["album"] == album]
         data.append(go.Box(
             y=norm_sent,
@@ -130,6 +130,7 @@ def phrase_sent_scatter(df):
 
     data = []
     for album in LINKIN_PARK_ALBUMS:
+        album = album.title().replace("-", " ")
         data.append(
             go.Scatter(
                 x=df["num_words"][df["album"] == album],
@@ -141,7 +142,7 @@ def phrase_sent_scatter(df):
                     color=album,
                     opacity=0.5
                 ),
-                name=album.title().replace("-", " "),
+                name=album,
                 text=df["phrase"][df["album"] == album]
             )
         )
@@ -274,7 +275,7 @@ def valence_arousal_dims():
     return fig
 
 
-def valence_arousal_plot(df):
+def valence_arousal_plot(df, df1):
 
     fig = tools.make_subplots(
         rows=4, cols=2,
@@ -283,10 +284,13 @@ def valence_arousal_plot(df):
     )
 
     for i, album in enumerate(LINKIN_PARK_ALBUMS):
+        album = album.title().replace("-", " ")
+        norm_sentiment = df1[df1["album"] == album]["norm_comp"].tolist()
+        norm_sentiment = [(4 * x + 5) for x in norm_sentiment]
         fig.append_trace(
             go.Scatter(
-                x=df[df["album"] == album]["valence_pred"].tolist(),
-                y=df[df["album"] == album]["arousal_pred"].tolist(),
+                x=df[df["album"] == album]["arousal_pred"].tolist(),
+                y=norm_sentiment,
                 mode="markers",
                 name=album.title().replace("-", " "),
                 text=df[df["album"] == album].index.tolist(),
@@ -297,11 +301,6 @@ def valence_arousal_plot(df):
                     opacity=0.5
                 ),
                 error_x=dict(
-                    type="data",
-                    color="rgba(0, 0, 0, 0.2)",
-                    array=df[df["album"] == album]["valence_std_dev"].tolist(),
-                ),
-                error_y=dict(
                     type="data",
                     color="rgba(0, 0, 0, 0.2)",
                     array=df[df["album"] == album]["arousal_std_dev"].tolist(),
