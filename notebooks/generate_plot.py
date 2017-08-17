@@ -20,7 +20,8 @@ def rel_freq_plot(df):
         rows=4, cols=2,
         subplot_titles=tuple(
             i.title().replace("-", " ") for i in LINKIN_PARK_ALBUMS
-        )
+        ),
+        print_grid=False,
     )
 
     for i in xrange(len(LINKIN_PARK_ALBUMS)):
@@ -46,7 +47,8 @@ def cos_sim_plot(df):
     fig = tools.make_subplots(
         rows=4, cols=2,
         subplot_titles=tuple(i.title().replace("-", " ")
-                             for i in LINKIN_PARK_ALBUMS)
+                             for i in LINKIN_PARK_ALBUMS),
+        print_grid=False,
     )
 
     for i in xrange(len(LINKIN_PARK_ALBUMS)):
@@ -280,7 +282,8 @@ def valence_arousal_plot(df, df1):
     fig = tools.make_subplots(
         rows=4, cols=2,
         subplot_titles=tuple(i.title().replace("-", " ")
-                             for i in LINKIN_PARK_ALBUMS)
+                             for i in LINKIN_PARK_ALBUMS),
+        print_grid=False
     )
 
     for i, album in enumerate(LINKIN_PARK_ALBUMS):
