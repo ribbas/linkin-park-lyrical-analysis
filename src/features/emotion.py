@@ -109,7 +109,8 @@ class EmotionClassifier(object):
             if err_down[i] <= val <= err_up[i]:
                 correct += 1
 
-        print "Accuracy of 90%% percentile: %0.3f" % (correct / len(truth))
+        print "Regressor generated with %0.2f%% percentile" \
+            % (correct / len(truth) * 100)
 
     def predict_score(self, labels, data):
 
@@ -141,7 +142,7 @@ class EmotionClassifier(object):
         )
 
         self.df["std_dev"] = self.df.apply(
-            lambda x: (x["mean_pred"] - x["lower"]), axis=1
+            lambda x: (x["mean_pred"] - x["lower"]) / 2.0, axis=1
         )
 
         self.df = self.df[["title", "album", "mean_pred", "std_dev"]]

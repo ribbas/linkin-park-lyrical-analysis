@@ -65,13 +65,14 @@ class DataframeGenerator(object):
         cs_allobj = CosineSimilarity(data=data, labels=labels)
         cs_allobj.cos_sim()
         order = np.argsort(-cs_allobj.df.values, axis=1)[:, 1:5 + 1]
-        self.cos_sim_all = DataFrame(
+        cos_sim_all = DataFrame(
             cs_allobj.df.columns[order],
             columns=["Top {}".format(i)
                      for i in range(1, 6)],
             index=cs_allobj.df.index
         )
 
+        self.cos_sim_all = cos_sim_all.sort_index().copy()
         print "cos_sim_all generated"
 
         # generate doc_sent by preserving the individual sentences during text
@@ -90,6 +91,7 @@ class DataframeGenerator(object):
         doc_sent = saobj.df
         doc_sent = doc_sent.set_index(doc_sent["title"])
         self.doc_sent = doc_sent[["album", "norm_comp"]]
+        self.doc_sent = self.doc_sent.sort_index().copy()
 
         print "doc_sent generated"
 
@@ -107,19 +109,21 @@ class DataframeGenerator(object):
         phrase_sent["num_words"] = phrase_sent["phrase"].apply(
             lambda x: len(x.split(" ")))
         phrase_sent = phrase_sent.reset_index()
-        self.phrase_sent = phrase_sent[
+        phrase_sent = phrase_sent[
             ["phrase", "sent_score", "num_words", "album", "norm_comp"]
         ]
 
+        self.phrase_sent = phrase_sent.set_index(phrase_sent["phrase"])
+        self.phrase_sent.drop("phrase", axis=1, inplace=True)
         print "phrase_sent generated"
 
-        self.extreme_phrase_sent = self.phrase_sent.iloc[:2]
+        self.extreme_phrase_sent = phrase_sent.iloc[:2]
         self.extreme_phrase_sent = self.extreme_phrase_sent.append(
-            self.phrase_sent.iloc[4:12])
+            phrase_sent.iloc[4:12])
         self.extreme_phrase_sent = self.extreme_phrase_sent.append(
-            self.phrase_sent.iloc[:-12:-1][::-1][:5])
+            phrase_sent.iloc[:-12:-1][::-1][:5])
         self.extreme_phrase_sent = self.extreme_phrase_sent.append(
-            self.phrase_sent.iloc[:-12:-1][::-1][6:11])
+            phrase_sent.iloc[:-12:-1][::-1][6:11])
 
         print "extreme_phrase_sent generated"
 
@@ -131,7 +135,7 @@ class DataframeGenerator(object):
 
         ec_obj = EmotionClassifier()
         ec_obj.train_model("arousal")
-        # ec_obj.get_pred_int()
+        ec_obj.get_pred_int()
         ec_obj.predict_score(labels, data)
         arousal = ec_obj.df
 

@@ -64,7 +64,7 @@ def cos_sim_plot(df):
                 colorscale=colorscale,
                 showlegend=False,
                 zmin=0,
-                zmax=0.5,
+                zmax=0.6,
                 colorbar={
                     "title": "Similarity",
                 }
@@ -145,7 +145,7 @@ def phrase_sent_scatter(df):
                     opacity=0.5
                 ),
                 name=album,
-                text=df["phrase"][df["album"] == album]
+                text=df.index[df["album"] == album]
             )
         )
 
