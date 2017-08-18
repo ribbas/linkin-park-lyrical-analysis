@@ -96,12 +96,11 @@ class DataframeGenerator(object):
         print "doc_sent generated"
 
         phrase_sent = doc_sent.set_index(
-            ["album", "norm_comp"]
+            ["title", "album", "norm_comp"]
         )["sentences"].apply(Series).stack()
         phrase_sent = phrase_sent.reset_index()
-        # print list(phrase_sent)
-        phrase_sent.drop("level_2", axis=1, inplace=True)
-        phrase_sent.columns = ["album", "norm_comp", "sentences"]
+        phrase_sent.drop("level_3", axis=1, inplace=True)
+        phrase_sent.columns = ["title", "album", "norm_comp", "sentences"]
         phrase_sent.drop_duplicates(subset="sentences", inplace=True)
         phrase_sent[["phrase", "sent_score"]] = phrase_sent[
             "sentences"].apply(Series)
@@ -110,7 +109,7 @@ class DataframeGenerator(object):
             lambda x: len(x.split(" ")))
         phrase_sent = phrase_sent.reset_index()
         phrase_sent = phrase_sent[
-            ["phrase", "sent_score", "num_words", "album", "norm_comp"]
+            ["phrase", "sent_score", "num_words", "title", "album", "norm_comp"]
         ]
 
         self.phrase_sent = phrase_sent.set_index(phrase_sent["phrase"])

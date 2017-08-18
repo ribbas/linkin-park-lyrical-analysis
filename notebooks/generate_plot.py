@@ -78,7 +78,7 @@ def cos_sim_plot(df):
 
     fig["layout"].update(
         height=2000, width=900,
-        title="Cosine Similarity",
+        title="Cosine Similarity of Songs Per Album",
         margin=go.Margin(l=190, b=150),
     )
 
@@ -101,6 +101,7 @@ def phrase_sent_plot(df):
     )]
 
     layout = go.Layout(
+        title="Top 10 Negative and Positive Sentiment Phrases",
         autosize=False,
         margin=go.Margin(l=400, pad=4),
     )
@@ -191,6 +192,7 @@ def valence_arousal_dims():
         "yaxis": {
             "title": "Arousal (Intensity)",
             "range": [0, 10],
+            "zeroline": False,
             "tick0": 1,
             "dtick": 1,
         },
@@ -235,7 +237,7 @@ def valence_arousal_dims():
             {
                 "x": 3,
                 "y": 6,
-                "text": "Calm",
+                "text": "Anger/Fear",
             }, {
                 "x": 3,
                 "y": 3,
@@ -247,7 +249,7 @@ def valence_arousal_dims():
             }, {
                 "x": 6.5,
                 "y": 3,
-                "text": "Anger/Fear",
+                "text": "Calm",
             },
         ]
 
@@ -292,8 +294,8 @@ def valence_arousal_plot(df, df1):
         norm_sentiment = [(4 * x + 5) for x in norm_sentiment]
         fig.append_trace(
             go.Scatter(
-                x=df[df["album"] == album]["arousal_pred"].tolist(),
-                y=norm_sentiment,
+                x=norm_sentiment,
+                y=df[df["album"] == album]["arousal_pred"].tolist(),
                 mode="markers",
                 name=album.title().replace("-", " "),
                 text=df[df["album"] == album].index.tolist(),
@@ -303,7 +305,7 @@ def valence_arousal_plot(df, df1):
                     color=album,
                     opacity=0.5
                 ),
-                error_x=dict(
+                error_y=dict(
                     type="data",
                     color="rgba(0, 0, 0, 0.2)",
                     array=df[df["album"] == album]["arousal_std_dev"].tolist(),
