@@ -43,6 +43,7 @@ run-nb: req-venv
 convert-html: req-venv
 	# convert notebook to static HTML
 	@jupyter nbconvert --to html notebooks/linkin-park-analysis.ipynb
+	@mv notebooks/linkin-park-analysis.html index.html
 
 
 .PHONY: clean-all
