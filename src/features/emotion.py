@@ -109,7 +109,7 @@ class EmotionClassifier(object):
             if err_down[i] <= val <= err_up[i]:
                 correct += 1
 
-        print "Regressor generated with %0.2f%% percentile" \
+        print "Regressor generated with %0.2f%% prediction interval" \
             % (correct / len(truth) * 100)
 
     def predict_score(self, labels, data):

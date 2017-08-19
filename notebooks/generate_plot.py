@@ -33,7 +33,7 @@ def rel_freq_plot(df):
 
     fig["layout"].update(
         height=2500, width=1000,
-        title="Top Relative Frequency of Terms",
+        title="<b>Top Relative Frequency of Terms</b>",
         margin=go.Margin(r=150, b=100),
     )
 
@@ -78,7 +78,7 @@ def cos_sim_plot(df):
 
     fig["layout"].update(
         height=2000, width=900,
-        title="Cosine Similarity of Songs Per Album",
+        title="<b>Cosine Similarity of Songs Per Album</b>",
         margin=go.Margin(l=190, b=150),
     )
 
@@ -101,7 +101,7 @@ def phrase_sent_plot(df):
     )]
 
     layout = go.Layout(
-        title="Top 10 Negative and Positive Sentiment Phrases",
+        title="<b>Top 10 Negative and Positive Sentiment Phrases</b>",
         autosize=False,
         margin=go.Margin(l=400, pad=4),
     )
@@ -126,7 +126,21 @@ def doc_sent_plot(df):
             showlegend=False,
         ))
 
-    return data
+    layout = go.Layout(
+        title="<b>Overall Sentiment Score of Albums</b>",
+        hovermode="closest",
+        xaxis={
+            "title": "Album",
+            "zeroline": False,
+        },
+        yaxis={
+            "title": "Sentiment Score",
+        },
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+
+    return fig
 
 
 def phrase_sent_scatter(df):
@@ -151,7 +165,7 @@ def phrase_sent_scatter(df):
         )
 
     layout = go.Layout(
-        title="Sentiment Score of Phrases",
+        title="<b>Sentiment Score of Phrases</b>",
         hovermode="closest",
         xaxis={
             "title": "Number of words",
@@ -181,7 +195,7 @@ def valence_arousal_dims():
     )]
 
     layout = {
-        "title": "Valence-Arousal Dimensions",
+        "title": "<b>Valence-Arousal Dimensions</b>",
         "xaxis": {
             "title": "Valence (Sentiment)",
             "range": [0, 10],
@@ -355,8 +369,8 @@ def valence_arousal_plot(df, df1):
         )
 
     fig["layout"].update(
+        title="<b>Valence-Arousal Charts</b>",
         height=2000, width=900,
-        title="Valence-Arousal Charts",
         showlegend=False,
     )
 

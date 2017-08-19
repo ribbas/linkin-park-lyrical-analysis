@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from pandas import DataFrame, Series, concat
+from pandas import DataFrame, Series
 
 from data.filemgmt import vectorize_docs
 from features.emotion import EmotionClassifier
@@ -152,3 +152,5 @@ class DataframeGenerator(object):
         self.valence_arousal = self.valence_arousal.sort_index().copy()
 
         print "valence-arousal generated"
+
+        print "\nTime report:"
